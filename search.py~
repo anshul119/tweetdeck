@@ -4,8 +4,10 @@ import requests
 import os
 import sys
 from flask import Flask,jsonify
+from flask.ext.cors import CORS
 from flask import render_template
-from flask import request
+from flask import request, session, g, redirect, url_for, abort, \
+      flash, _app_ctx_stack
 
 CONSUMER_KEY = "bRQ8lijzeN6cweEfi7tPn2R2X"
 CONSUMER_SECRET = "W940lRsPkCKJKpNGEiRKjYa4BHVMWC7zgPP4pLY8tYuyllwXRm"
