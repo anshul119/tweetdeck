@@ -1,0 +1,135 @@
+<html>
+<head>
+<title>
+  HashTag Roassted
+</title>
+<style>
+            body { 
+                min-width: 420px; 
+                overflow-x: hidden; 
+                font-family: Arial, sans-serif; 
+                font-size: 12px; 
+            }
+            input, textarea { 
+                width: 420px; 
+            }
+            input#save { 
+                font-weight: bold; width: auto; 
+            }
+        </style>
+        <script src="/static/jquery.min.js"></script>
+        <script type="text/javascript" src="http://medihack.github.io/fiji/external/jquery.ui.core.js"></script>
+        <script type="text/javascript" src="http://medihack.github.io/fiji/external/jquery.ui.widget.js"></script>
+	<script type="text/javascript" src="/static/ticker.js"></script>
+</head>
+
+<body>
+<h1>Check Box to Move Blocked tweet(s) to Unblocked tweets</h1>
+<div id="err"></div>
+ <div id="update"> <br><center><input type='button' id = 'ck' value='Check_For_new_blocked_tweets'><br><h3>Pls don't abuse this button!</h3></center></div>
+
+<div id="sub"></div>
+
+<p id="ans">Retriving tweets,please wait!</p>
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+     var enableSubmit = function(ele) {
+    $(ele).removeAttr("disabled");
+}
+     function isEmpty(obj) {
+       for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            return false;
+     }
+
+    return true;
+    }
+
+      $('#update').on("click","#ck",function(e){
+       
+       $.ajax({
+          type: "GET",
+            url: "/blocked",
+            success: function(html){
+                console.log(html)
+                html_str=""
+                
+                for (var key in html) {
+                        if (html.hasOwnProperty(key)) {
+                            html_str+='<input type="checkbox" name="block[]" value="'+key+'" ><iframe border=0 frameborder=0 height=150 width=550 src="http://twitframe.com/show?url='+html[key]+'"></iframe><br>';
+                          }
+                         }
+                $('#err').html("");
+
+                if(isEmpty(html)==false){
+                  $("#sub").html("<input type='button' value='submit' id='submit'>")
+                  if( $('#ans').is(':empty')){
+                   $('#err').html("")
+                   $('#ans').html(html_str)
+                   $('#err').html("<h1><font color='green'>Blocked Tweets Updated , Please click on check update for new blocked tweets!</font></h1>") 
+                 }
+                  else{
+                    $('#err').html("")
+                    $('#err').html("<h1><font color='green'>Blocked Tweets Updated, Please click on check update for new blocked tweets!</font></h1>")
+                    $('#ans').prepend(html_str)
+
+                   }
+                }
+            }})
+
+        
+      })
+
+      $('#sub').on("click",'#submit',function(e) {
+        e.preventDefault();
+          
+        var val = [];
+        $(':checkbox:checked').each(function(i){
+          val[i] = $(this).val();
+        });
+        console.log(JSON.stringify(val))
+        $.ajax({
+        type : "POST",
+        url : "/unsensor",
+        data: JSON.stringify(val),
+        contentType: 'application/json',
+        success: function(result) {
+            console.log(result);
+location.reload();
+
+            }
+        
+    });
+        
+       }); 
+
+
+       $.ajax({
+          type: "GET",
+            url: "/blocked",
+            success: function(html){
+                console.log(html)
+                html_str=""
+
+                for (var key in html) {
+                        if (html.hasOwnProperty(key)) {
+                            html_str+='<input type="checkbox" name="block[]" value="'+key+'"><iframe border=0 frameborder=0 height=150 width=550 src="http://twitframe.com/show?url='+html[key]+'"></iframe><br>';
+                          }
+                         }
+     
+                if(isEmpty(html))
+                 $('#err').html("<h1><font color='red'> No Blocked Tweets :=)</h1></font>")   
+              
+                if(isEmpty(html)==false){
+                  $("#sub").html("<input type='button' value='submit' id='submit'>")
+                  $('#ans').html(html_str);  
+              }
+
+             }})
+
+  })
+</script>
+</body>
+</html>

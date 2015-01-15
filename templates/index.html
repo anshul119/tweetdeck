@@ -1,0 +1,101 @@
+<html>
+<head>
+<title>
+  HashTag Roassted
+</title>
+<style>
+            body { 
+                overflow-x: hidden; 
+                font-family: Arial, sans-serif; 
+                font-size: 12px; 
+                overflow-y: hidden;
+            }
+            body:hover {
+            overflow-y: scroll;
+            }
+          ul
+        {
+       list-style-type: none;
+       }
+        #ticker {
+ 	 width: 700px ;
+ 	 margin-left: auto ;
+  	margin-right: auto ;
+}
+
+        </style>
+        <script src="/static/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/ticker.js"></script>
+        <script type="text/javascript" src="/static/easing.js"></script>
+        <script type="text/javascript" src="/static/ticker.js"></script>
+       
+</head>
+
+<body>
+<div id="ticker">Retriving tweets,please wait!</div>
+<script type="text/javascript">
+$(document).ready(function() {
+            
+            function isEmpty(obj) {
+                for (var prop in obj) {
+                    if (obj.hasOwnProperty(prop))
+                        return false;
+                }}
+
+                function update_tweets(url) {
+
+                    $.ajax({
+                        type: "GET",
+                        url: url,
+                        success: function(html) {
+                            console.log(html)
+                            if (url == "/approved") {
+                                html_str = "<ul>"
+                                for (var key in html) {
+                                    if (html.hasOwnProperty(key)) {
+                                        html_str += '<li><iframe rel="prefetch" border=0 frameBorder="0" seamless="seamless" scrolling="no" height=250 width=550 src="http://twitframe.com/show?url=' + html[key] + '"></iframe></li><br>';
+                                    }
+                                }
+                                htm_str = "</ul>"
+                                $('#ticker').html("");
+                                $('#ticker').html(html_str);
+                                $('#example').vTicker('remove');
+                                $('#ticker').vTicker('init', {speed: 600, 
+  				  pause: 3000,
+				  showItems: 4,
+                                  mousePause:false,
+    			          padding:0});
+                            } //approved url
+                            else {
+                                if (isEmpty(html) == false) {
+                                    html_str = ""
+                                    i = 1
+                                    for (var key in html) {
+                                        if (html.hasOwnProperty(key)) {
+                                            i += 1
+                                            html_str += '<li><iframe rel="prefetch" border=0 frameBorder="0" seamless="seamless" scrolling="no" height=250 width=550 src="http://twitframe.com/show?url=' + html[key] + '"></iframe></li><br>';
+                                        }
+                                    }
+                                    $("#ticker ul").prepend(html_str);
+                                    console.log("Object updated::")
+                                    console.log(i);
+                                } else
+                                    console.log("No Object updated")
+
+                            }
+
+                        }
+                    })
+                }
+
+
+                update_tweets("/approved");
+
+                setInterval(function() {
+                    console.log("updating")
+                    update_tweets("/approved");
+                }, 60000);
+            })
+</script>
+</body>
+</html>

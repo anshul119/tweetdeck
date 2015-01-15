@@ -1,0 +1,168 @@
+<html>
+<head>
+<title>
+  HashTag Roassted
+</title>
+<style>
+            body { 
+                min-width: 420px; 
+                overflow-x: hidden; 
+                font-family: Arial, sans-serif; 
+                font-size: 12px; 
+            }
+            input, textarea { 
+                width: 420px; 
+            }
+            input#save { 
+                font-weight: bold; width: auto; 
+            }
+        </style>
+        <script src="/static/jquery.min.js"></script>
+</head>
+
+<body>
+<h1>Uncheck Box to Block tweets  from displaying in USER INTERFACE!</h1>
+<div id="err"></div>
+ <div id="update"> <br><center><input type='button' id = 'ck' value='Check_For_updates'><br><h3>It Auto checks for updates in 30 sec..Pls don't abuse this button!</h3></center></div>
+
+<div id="sub"></div>
+
+<p id="ans">Retriving tweets,please wait!</p>
+
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+     localStorage.clear();
+     var enableSubmit = function(ele) {
+    $(ele).removeAttr("disabled");
+}
+     function isEmpty(obj) {
+       for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            return false;
+     }
+
+    return true;
+    }
+
+    function upd(){
+       $("#err").html("")
+       $.ajax({
+          type: "GET",
+            url: "/update",
+            success: function(html){
+                html_str=""
+                
+                for (var key in html) {
+                        if (html.hasOwnProperty(key)) {
+                            html_str+='<input type="checkbox" name="approve[]" value="'+key+'" checked><iframe border=0 frameborder=0 height=150 width=550 src="http://twitframe.com/show?url='+html[key]+'"></iframe><br>';
+                          }
+                         }
+                $('#err').html("");
+
+                if(isEmpty(html)==false){
+                  $("#sub").html("<input type='button' value='submit' id='submit'>")
+                  if( $('#ans').is(':empty')){
+                   $('#err').html("")
+                   $('#ans').html(html_str)
+                   $('#err').html("<h1><font color='green'>Tweets Updated(Uncensored), Please click on check update for new tweets!</font></h1>") 
+                 }
+                  else{
+                    $('#err').html("")
+                    $('#err').html("<h1><font color='green'>Tweets Updated(Uncensored), Please click on check update for new tweets!</font></h1>")
+                    $('#ans').prepend(html_str)
+
+                   }
+                }
+                
+                if(isEmpty(html)){
+                 $('#err').html("<h1><font color='red'> No new Tweets :/</h1></font>")
+                 if( $('#ans').is(':empty'))
+                     $("#sub").html("")
+                }
+
+             }})
+  }
+
+      $('#update').on("click","#ck",function(e){
+         var that = $('#ck');
+         $('#ck').attr("disabled", true);
+         setTimeout(function() { enableSubmit(that) }, 30000);
+         upd();
+      
+      })
+
+      setInterval(function(){
+           console.log($('#ck').is(':disabled'))
+          if($('#ck').is(':disabled')==false){
+           $('#ck').trigger('click');
+           console.log("updating")
+          }
+          else
+            console.log("update already in progress!");
+                  
+           }, 30000);
+
+      $('#sub').on("click",'#submit',function(e) {
+        e.preventDefault();
+          
+        var val = [];
+        $(':checkbox:checked').each(function(i){
+          val[i] = $(this).val();
+        });
+        console.log("new approved!")
+        console.log(JSON.stringify(val))
+        var data = JSON.stringify(val)
+        if(localStorage.approved===undefined)
+          localStorage.approved = data
+        else{
+          local = JSON.parse(localStorage.approved)
+          data = JSON.stringify(JSON.parse(data).concat(local))
+          localStorage.approved = data
+         }
+        
+        console.log("total approved!")
+        console.log(data)
+
+        $.ajax({
+        type : "POST",
+        url : "/sensor",
+        data: data,
+        contentType: 'application/json',
+        success: function(result) {
+            $('#err').html("") 
+            $('#err').html("<h1><font color='green'>Tweets Sensored, Please click on check update for new tweets!</font></h1>")
+            $("#sub").html("")
+            $('#ans').html("")
+        }
+    });
+        
+       }); 
+
+
+       $.ajax({
+          type: "GET",
+            url: "/back",
+            success: function(html){
+                html_str=""
+                for (var key in html) {
+                        if (html.hasOwnProperty(key)) {
+                            html_str+='<input type="checkbox" name="approve[]" value="'+key+'" checked><iframe border=0 frameborder=0 height=150 width=550 src="http://twitframe.com/show?url='+html[key]+'"></iframe><br>';
+                          }
+                         }
+     
+                if(isEmpty(html))
+                 $('#err').html("<h1><font color='red'> No new Tweets :/</h1></font>")   
+              
+                if(isEmpty(html)==false){
+                  $("#sub").html("<input type='button' value='submit' id='submit'>")
+                  $('#ans').html(html_str);  
+              }
+
+             }})
+
+  })
+</script>
+</body>
+</html>
