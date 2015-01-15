@@ -149,4 +149,6 @@ def unsensor():
 if __name__=="__main__":
    Search.Oauth_Twitter()
    Search.SearchHash("techieb","index")  
-   app.run(host="0.0.0.0",port=int(8080),debug=True)
+
+   app.run(host="0.0.0.0",port = int(os.environ.get('PORT', 5000))
+,debug=True)
