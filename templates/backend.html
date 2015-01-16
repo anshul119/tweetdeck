@@ -5,6 +5,7 @@
 </title>
 <style>
             body { 
+            body { 
                 min-width: 420px; 
                 overflow-x: hidden; 
                 font-family: Arial, sans-serif; 
@@ -23,7 +24,7 @@
 <body>
 <h1>Uncheck Box to Block tweets  from displaying in USER INTERFACE!</h1>
 <div id="err"></div>
- <div id="update"> <br><center><input type='button' id = 'ck' value='Check_For_updates'><br><h3>It Auto checks for updates in 30 sec..Pls don't abuse this button!</h3></center></div>
+ <div id="update"> <br><center><input type='button' id = 'ck' value='Check_For_updates'><br><h3>It Auto checks for updates in 15 sec..Pls don't abuse this button!</h3></center></div>
 
 <div id="sub"></div>
 
@@ -88,7 +89,7 @@ $(document).ready(function(){
       $('#update').on("click","#ck",function(e){
          var that = $('#ck');
          $('#ck').attr("disabled", true);
-         setTimeout(function() { enableSubmit(that) }, 30000);
+         setTimeout(function() { enableSubmit(that) }, 15000);
          upd();
       
       })
@@ -102,7 +103,7 @@ $(document).ready(function(){
           else
             console.log("update already in progress!");
                   
-           }, 30000);
+           }, 15000);
 
       $('#sub').on("click",'#submit',function(e) {
         e.preventDefault();

@@ -46,7 +46,7 @@ Search = TwitterAPI()
 
 @app.route('/')
 def index():
-  Search.SearchHash("techieb","backend")   
+  Search.SearchHash("ZaedenLSR","backend")   
   return jsonify(tweets)
 
 
@@ -59,7 +59,7 @@ def back():
 def update():
   global new_tweets,backend_tweets
   new_tweets.clear()
-  Search.SearchHash("techieb","backend")
+  Search.SearchHash("ZaedenLSR","backend")
   backend_tweets = dict(backend_tweets.items()+new_tweets.items())
   return jsonify(new_tweets)
 
@@ -148,7 +148,7 @@ def unsensor():
     return jsonify(blocked_tweets)
 if __name__=="__main__":
    Search.Oauth_Twitter()
-   Search.SearchHash("techieb","index")  
+   Search.SearchHash("ZaedenLSR","index")  
 
    app.run(host="0.0.0.0",port = int(os.environ.get('PORT', 5000))
 ,debug=True)
